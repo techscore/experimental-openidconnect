@@ -1,0 +1,4 @@
+namespace: nginx-ingress
+
+bases:
+- ../base

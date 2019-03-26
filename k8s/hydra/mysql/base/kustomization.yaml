@@ -1,0 +1,7 @@
+namespace: hydra
+resources:
+- pvc.mysql.yaml
+- deployment.mysql.yaml
+- svc.mysql.yaml
+commonAnnotations:
+  appGroup: hydra

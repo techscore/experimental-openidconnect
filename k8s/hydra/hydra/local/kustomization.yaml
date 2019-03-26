@@ -1,0 +1,6 @@
+namespace: hydra
+
+bases:
+- ../base
+patches:
+- ingress.hydra.patch.yaml

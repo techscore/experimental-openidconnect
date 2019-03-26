@@ -1,0 +1,30 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: postgres-pv-volume
+  labels:
+    type: local
+    app: postgres
+spec:
+  storageClassName: postgresdb
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    # TODO modified
+    path: "<need modified>"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: postgres-pv-claim
+  labels:
+    app: postgres
+spec:
+  storageClassName: postgresdb
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi

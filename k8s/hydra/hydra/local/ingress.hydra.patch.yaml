@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: hydra-public-ingress
+spec:
+  tls:
+  - hosts:
+    - hydra-public-api.synergy-example.com
+    - hydra-admin-api.synergy-example.com
+  rules:
+  - host: hydra-public-api.synergy-example.com
+    http:
+      paths:
+      - backend:
+          serviceName: hydra-service
+          servicePort: 80
+  - host: hydra-admin-api.synergy-example.com
+    http:
+      paths:
+      - backend:
+          serviceName: hydra-admin-service
+          servicePort: 80

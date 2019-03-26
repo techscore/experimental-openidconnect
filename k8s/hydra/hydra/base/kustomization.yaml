@@ -1,0 +1,10 @@
+namespace: hydra
+resources:
+- secret.hydra.yaml
+- pvc.hydra.yaml
+- deployment.hydra.yaml
+- ingress.hydra.yaml
+- service.hydra.yaml
+- service.hydra-admin.yaml
+commonAnnotations:
+  appGroup: hydra

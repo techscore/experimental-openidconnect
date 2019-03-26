@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hydra
+  labels:
+    application: hydra
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      application: hydra
+  template:
+    metadata:
+      labels:
+        application: hydra
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: application
+                    operator: In
+                    values:
+                    - hydra
+                topologyKey: kubernetes.io/hostname
+      terminationGracePeriodSeconds: 60
+      volumes:
+        - name: hydra-data
+          persistentVolumeClaim:
+            claimName: hydra-data
+        - name: hydra-secret
+          secret:
+            secretName: hydra-secret
+      containers:
+        - name: hydra
+          image: oryd/hydra:v1.0.0-rc.6_oryOS.10-alpine
+          command: ["hydra", "serve", "all", "--dangerous-force-http"]
+          ports:
+          - name: public-port
+            containerPort: 4444
+          - name: admin-port
+            containerPort: 4445
+          resources:
+            limits:
+              memory: 1Gi
+            requests:
+              memory: 128Mi
+          volumeMounts:
+            - name: hydra-data
+              mountPath: hydra-data
+          env:
+            - name: SYSTEM_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: hydra-secret
+                  key: system.secret
+            - name: DATABASE_URL
+              value: postgres://hydra:secret@postgres:5432/hydra?sslmode=disable
+            - name: HTTPS_ALLOW_TERMINATION_FROM
+              value: 0.0.0.0/0
+            - name: LOG_LEVEL
+              value: debug
+            # for kube-apiserver sample(kubeapi-server はhttpsでアクセスしないとJWT検証できない。httpはNG)
+            - name: OAUTH2_ISSUER_URL
+              value: https://hydra-public-api.synergy-example.com:30443
+            # for istio authentication sample (istio は自己署名証明書のサーバにhttpsアクセスしてJWT検証できない. httpは可能)
+            # - name: OAUTH2_ISSUER_URL
+            #   value: http://hydra-public-api.synergy-example.com:30080
+            - name: OAUTH2_CONSENT_URL
+              value: http://localhost:3000/consent
+            - name: OAUTH2_LOGIN_URL
+              value: http://localhost:3000/login
+            - name: ACCESS_TOKEN_LIFESPAN
+              value: 1h
+            - name: ID_TOKEN_LIFESPAN
+              value: 1h

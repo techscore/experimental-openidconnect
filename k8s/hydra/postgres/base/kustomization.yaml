@@ -1,0 +1,8 @@
+namespace: hydra
+resources:
+- config.postgres.yaml
+- pvc.postgres.yaml
+- deployment.postgres.yaml
+- svc.postgres.yaml
+commonAnnotations:
+  appGroup: hydra

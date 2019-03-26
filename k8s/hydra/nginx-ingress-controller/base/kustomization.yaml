@@ -1,0 +1,8 @@
+namespace: nginx-ingress
+resources:
+- deployment.default-backend.yaml
+- deployment.nginx-ingress-controller.yaml
+- svc.default-backend.yaml
+- svc.nginx-ingress-controller.yaml
+commonAnnotations:
+  appGroup: nginx-ingress
